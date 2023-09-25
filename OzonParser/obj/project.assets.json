@@ -903,24 +903,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\admin\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\LinuxHater\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\admin\\Desktop\\OzonParser\\OzonParser\\OzonParser.csproj",
+      "projectUniqueName": "C:\\Users\\LinuxHater\\Desktop\\OzonParser\\OzonParser\\OzonParser.csproj",
       "projectName": "OzonParser",
-      "projectPath": "C:\\Users\\admin\\Desktop\\OzonParser\\OzonParser\\OzonParser.csproj",
-      "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\admin\\Desktop\\OzonParser\\OzonParser\\obj\\",
+      "projectPath": "C:\\Users\\LinuxHater\\Desktop\\OzonParser\\OzonParser\\OzonParser.csproj",
+      "packagesPath": "C:\\Users\\LinuxHater\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\LinuxHater\\Desktop\\OzonParser\\OzonParser\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\LinuxHater\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -983,7 +978,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
       }
     }
   }
