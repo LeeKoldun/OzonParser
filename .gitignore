@@ -2,4 +2,4 @@
 # Данный GITIGNORE-файл был автоматически создан Microsoft(R) Visual Studio.
 ################################################################################
 
-/OzonParser/bin/Debug/net7.0
+/OzonParser/bin/

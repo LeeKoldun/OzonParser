@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "dgSpecHash": "SqMZAQIpwPdMXUfuE3juSXqsNZVcfZcJkEYqN9VYiugFv7OjqVMfl2eq443L2ng8ZRpJ2bQGGlfu/05RiqBECA==",
+  "dgSpecHash": "c7e4Vgi3J5rhHo8I31sYix4PAUZphmHG4Y/ntbsynWQVSK1f0Zn+m5Fomr//zEBkWLIpmMAwZCOnkOCuSqTSXQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\nerok\\RiderProjects\\OzonParser\\OzonParser\\OzonParser.csproj",
+  "projectFilePath": "C:\\Users\\admin\\Desktop\\OzonParser\\OzonParser\\OzonParser.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\nerok\\.nuget\\packages\\anglesharp\\1.0.4\\anglesharp.1.0.4.nupkg.sha512",
-    "C:\\Users\\nerok\\.nuget\\packages\\cefsharp.common.netcore\\116.0.230\\cefsharp.common.netcore.116.0.230.nupkg.sha512",
-    "C:\\Users\\nerok\\.nuget\\packages\\cefsharp.offscreen.netcore\\116.0.230\\cefsharp.offscreen.netcore.116.0.230.nupkg.sha512",
-    "C:\\Users\\nerok\\.nuget\\packages\\chromiumembeddedframework.runtime\\116.0.23\\chromiumembeddedframework.runtime.116.0.23.nupkg.sha512",
-    "C:\\Users\\nerok\\.nuget\\packages\\chromiumembeddedframework.runtime.win-arm64\\116.0.23\\chromiumembeddedframework.runtime.win-arm64.116.0.23.nupkg.sha512",
-    "C:\\Users\\nerok\\.nuget\\packages\\chromiumembeddedframework.runtime.win-x64\\116.0.23\\chromiumembeddedframework.runtime.win-x64.116.0.23.nupkg.sha512",
-    "C:\\Users\\nerok\\.nuget\\packages\\chromiumembeddedframework.runtime.win-x86\\116.0.23\\chromiumembeddedframework.runtime.win-x86.116.0.23.nupkg.sha512",
-    "C:\\Users\\nerok\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
-    "C:\\Users\\nerok\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
-    "C:\\Users\\nerok\\.nuget\\packages\\system.drawing.common\\4.7.0\\system.drawing.common.4.7.0.nupkg.sha512",
-    "C:\\Users\\nerok\\.nuget\\packages\\system.text.encoding.codepages\\7.0.0\\system.text.encoding.codepages.7.0.0.nupkg.sha512"
+    "C:\\Users\\admin\\.nuget\\packages\\anglesharp\\1.0.4\\anglesharp.1.0.4.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\cefsharp.common.netcore\\116.0.230\\cefsharp.common.netcore.116.0.230.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\cefsharp.offscreen.netcore\\116.0.230\\cefsharp.offscreen.netcore.116.0.230.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\chromiumembeddedframework.runtime\\116.0.23\\chromiumembeddedframework.runtime.116.0.23.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\chromiumembeddedframework.runtime.win-arm64\\116.0.23\\chromiumembeddedframework.runtime.win-arm64.116.0.23.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\chromiumembeddedframework.runtime.win-x64\\116.0.23\\chromiumembeddedframework.runtime.win-x64.116.0.23.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\chromiumembeddedframework.runtime.win-x86\\116.0.23\\chromiumembeddedframework.runtime.win-x86.116.0.23.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\system.drawing.common\\4.7.0\\system.drawing.common.4.7.0.nupkg.sha512",
+    "C:\\Users\\admin\\.nuget\\packages\\system.text.encoding.codepages\\7.0.0\\system.text.encoding.codepages.7.0.0.nupkg.sha512"
   ],
   "logs": []
 }
