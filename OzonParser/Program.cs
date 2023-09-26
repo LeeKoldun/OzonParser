@@ -1,8 +1,7 @@
 ﻿using CefSharp;
-using CefSharp.OffScreen;
 using ParserLib;
 
-namespace OzonParser {
+namespace OzonProdRefsParser {
     
     internal static class Program {
         

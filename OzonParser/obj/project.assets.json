@@ -1036,19 +1036,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\LinuxHater\\.nuget\\packages\\": {}
+    "C:\\Users\\nerok\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\LinuxHater\\Desktop\\OzonParser\\OzonParser\\OzonProdRefsParser.csproj",
+      "projectUniqueName": "C:\\Users\\nerok\\OneDrive\\Desktop\\OzonParser\\OzonParser\\OzonProdRefsParser.csproj",
       "projectName": "OzonProdRefsParser",
-      "projectPath": "C:\\Users\\LinuxHater\\Desktop\\OzonParser\\OzonParser\\OzonProdRefsParser.csproj",
-      "packagesPath": "C:\\Users\\LinuxHater\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\LinuxHater\\Desktop\\OzonParser\\OzonParser\\obj\\",
+      "projectPath": "C:\\Users\\nerok\\OneDrive\\Desktop\\OzonParser\\OzonParser\\OzonProdRefsParser.csproj",
+      "packagesPath": "C:\\Users\\nerok\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\nerok\\OneDrive\\Desktop\\OzonParser\\OzonParser\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\LinuxHater\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\nerok\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -1062,8 +1062,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\LinuxHater\\Desktop\\OzonParser\\ParserLib\\ParserLib.csproj": {
-              "projectPath": "C:\\Users\\LinuxHater\\Desktop\\OzonParser\\ParserLib\\ParserLib.csproj"
+            "C:\\Users\\nerok\\OneDrive\\Desktop\\OzonParser\\ParserLib\\ParserLib.csproj": {
+              "projectPath": "C:\\Users\\nerok\\OneDrive\\Desktop\\OzonParser\\ParserLib\\ParserLib.csproj"
             }
           }
         }
