@@ -4,24 +4,30 @@ using ParserLib;
 namespace OzonProdRefsParser {
     
     internal static class Program {
-        
+        static string? address = "";
+        static int pageCount = 1;
+
         static void Main() {
             Console.Write("Enter ozon search url: ");
 
-            string? address = "";
             while(string.IsNullOrEmpty(address)) {
                 address = Console.ReadLine();
             }
 
+            if(File.Exists("ProductRefs.csv")) File.Delete("ProductRefs.csv");
+
             Parser.Init(address).Wait();
-            MainAsync().Wait();
-            Parser.Shutdown();
+            while(true) {
+                MainAsync().Wait();
+            }
+
+            //Parser.Shutdown();
         }
 
         static async Task MainAsync() {
             var browser = Parser.Browser;
 
-            Console.WriteLine("Loading site...");
+            Console.WriteLine("Loading catalogue...");
             await Task.Delay(5000);
 
             var doc = await Parser.GetHtmlSource(await browser.GetSourceAsync());
@@ -40,22 +46,27 @@ namespace OzonProdRefsParser {
 
             List<string> prodList = new();
             foreach ( var product in products ) {
-                string refHtml = (isFirstTypeStruct ? product.FirstElementChild!.FirstElementChild : product.FirstElementChild)!.GetAttribute("href")!;
+                string refHtml = (isFirstTypeStruct ? product.FirstElementChild!.FirstElementChild : product.FirstElementChild)!.GetAttribute("href")!.Split("?").First();
                 await Console.Out.WriteLineAsync(refHtml);
                 await Console.Out.WriteLineAsync("\n");
 
                 prodList.Add(Parser.BaseUrl + refHtml);
             }
             Console.WriteLine("\n\n");
-            await Console.Out.WriteLineAsync($"Got {products.Length} items on current page");
+            await Console.Out.WriteLineAsync($"Got {products.Length} items on page {pageCount}");
 
-            using(var sw = new StreamWriter("ProductRefs.csv")) { sw.WriteLine(string.Join(",", prodList)); }
-            await Console.Out.WriteLineAsync("Wrote csv file of refs...");
+            using(var sw = new StreamWriter("ProductRefs.csv", true)) { sw.Write((pageCount == 1 ? "" : ",") + string.Join(",", prodList)); }
+            await Console.Out.WriteLineAsync("Wrote refs to csv file...");
 
-            Console.WriteLine("Done!");
-            Console.WriteLine("PRESS ANY BUTTON TO EXIT CONSOLE");
-
-            Console.ReadKey();
+            var next = doc.QuerySelector(".a2423-a4");
+            if(next != null) {
+                pageCount++;
+                browser.ExecuteScriptAsync("document.querySelector('.ep1.a2423-a').firstElementChild.click()");
+            }
+            else {
+                await Console.Out.WriteLineAsync("\nDONE\n");
+                return;
+            }
         }
         
     }

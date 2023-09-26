@@ -4,6 +4,9 @@ using SpreadsheetLight;
 namespace ParserLib
 {
     public static class ExcelParser {
+        public static SLDocument Sl { get; set; }
+        public static int RowIndex { get; set; } = 2;
+
         private const string _contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         private static string[] _template = {
             "ID",
@@ -23,35 +26,35 @@ namespace ParserLib
             "ImgUrl"
         };
 
-        public static void ConvertProdToExcel(List<ProdModel> prods) {
-            using(SLDocument sl = new SLDocument()) {
-                for(int i = 0; i < _template.Length; i++) {
-                    sl.SetCellValue(1, i + 1, _template[i]);
-                }
-
-                for(int i = 0; i < prods.Count; i++) {
-                    ProdModel prod = prods[i];
-                    SellerModel seller = prod.Seller;
-
-                    sl.SetCellValue(i + 2, 1, i + 1); // ID
-                    sl.SetCellValue(i + 2, 2, prod.Title); // Name
-                    sl.SetCellValue(i + 2, 3, prod.Description); // Description
-                    sl.SetCellValue(i + 2, 4, prod.ProdParams); // Params
-                    sl.SetCellValue(i + 2, 5, prod.Price); // Price
-                    sl.SetCellValue(i + 2, 6, prod.Url); // Url
-
-                    sl.SetCellValue(i + 2, 7, seller.Name); // Shop
-                    sl.SetCellValue(i + 2, 8, seller.Url); // ShopUrl
-                    sl.SetCellValue(i + 2, 9, seller.Ogrn); // Ogrn
-                    sl.SetCellValue(i + 2, 10, seller.Nds); // Nds
-
-                    sl.SetCellValue(i + 2, 11, prod.Rating); // Rating
-                    sl.SetCellValue(i + 2, 12, prod.RatingCount); // RatingCount
-                    sl.SetCellValue(i + 2, 13, prod.ImgUrl); // ImgUrl
-                }
-
-                sl.SaveAs("TestTable.xls");
+        public static void InitSheet() {
+            Sl = new SLDocument();
+            for (int i = 0; i < _template.Length; i++) {
+                Sl.SetCellValue(1, i + 1, _template[i]);
             }
         }
+
+        public static void ConvertProdToExcel(ProdModel prod) {
+            SellerModel seller = prod.Seller;
+
+            Sl.SetCellValue(RowIndex, 1, RowIndex - 1); // ID
+            Sl.SetCellValue(RowIndex, 2, prod.Title); // Name
+            Sl.SetCellValue(RowIndex, 3, prod.Description); // Description
+            Sl.SetCellValue(RowIndex, 4, prod.ProdParams); // Params
+            Sl.SetCellValue(RowIndex, 5, prod.Price); // Price
+            Sl.SetCellValue(RowIndex, 6, prod.Url); // Url
+
+            Sl.SetCellValue(RowIndex, 7, seller.Name); // Shop
+            Sl.SetCellValue(RowIndex, 8, seller.Url); // ShopUrl
+            Sl.SetCellValue(RowIndex, 9, seller.Ogrn); // Ogrn
+            Sl.SetCellValue(RowIndex, 10, seller.Nds); // Nds
+
+            Sl.SetCellValue(RowIndex, 11, prod.Rating); // Rating
+            Sl.SetCellValue(RowIndex, 12, prod.RatingCount); // RatingCount
+            Sl.SetCellValue(RowIndex, 13, prod.ImgUrl); // ImgUrl
+
+            RowIndex++;
+        }
+
+        public static void SaveSheet() => Sl.SaveAs("ResultTable.xls");
     }
 }
