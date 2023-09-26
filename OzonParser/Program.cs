@@ -1,67 +1,62 @@
-﻿using AngleSharp.Dom;
-using AngleSharp.Html.Dom;
-using AngleSharp.Html.Parser;
-using CefSharp;
+﻿using CefSharp;
 using CefSharp.OffScreen;
+using ParserLib;
 
 namespace OzonParser {
     
     internal static class Program {
         
-        private static async Task Main() {
-            await Cef.InitializeAsync(new CefSettings()
-            {
-                LogSeverity = LogSeverity.Disable
-            });
+        static void Main() {
+            Console.Write("Enter ozon search url: ");
 
-            string address = "https://www.ozon.ru/category/smartfony-15502/?category_was_predicted=true&deny_category_prediction=true&from_global=true&text=%D1%81%D0%BC%D0%B0%D1%80%D1%82%D1%84%D0%BE%D0%BD";
-            //string address = "https://www.ozon.ru/category/avtomobilnye-kompressory-8577/?category_was_predicted=true&deny_category_prediction=true&from_global=true&text=%D0%BD%D0%B0%D1%81%D0%BE%D1%81+%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%BE%D0%B1%D0%B8%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9";
-
-            using (var browser = new ChromiumWebBrowser(address)) {
-                var initResult = await browser.WaitForInitialLoadAsync();
-            
-                if (!initResult.Success) {
-                    Console.WriteLine("Couldn't load site!");
-                    return;
-                }
-
-                Console.WriteLine("Loading site...");
-                await Task.Delay(5000);
-
-            
-                var doc = await GetHtmlSource(await browser.GetSourceAsync());
-                var item = doc.QuerySelector(".widget-search-result-container")!;
-                var itemsWrapper = item.FirstElementChild;
-
-                //foreach ( var child in a )
-                //{
-                //    Console.WriteLine(child.InnerHtml + "\n");
-                //}
-
-                string className = itemsWrapper.FirstElementChild!.ClassName!.Replace(" ", ".").Insert(0, ".");
-                Console.WriteLine($"Got class name: {className}");
-                var products = doc.QuerySelectorAll(className);
-
-                foreach( var product in products ) {
-                    var refHtml = product.FirstElementChild!.FirstElementChild!;
-                    await Console.Out.WriteLineAsync(refHtml.GetAttribute("href"));
-                    await Console.Out.WriteLineAsync("\n");
-                }
-                Console.WriteLine("\n\n\n");
-                await Console.Out.WriteLineAsync($"Got {products.Length} item on current page");
-
-                browser.Dispose();
+            string? address = "";
+            while(string.IsNullOrEmpty(address)) {
+                address = Console.ReadLine();
             }
-            
+
+            Parser.Init(address).Wait();
+            MainAsync().Wait();
+            Parser.Shutdown();
+        }
+
+        static async Task MainAsync() {
+            var browser = Parser.Browser;
+
+            Console.WriteLine("Loading site...");
+            await Task.Delay(5000);
+
+            var doc = await Parser.GetHtmlSource(await browser.GetSourceAsync());
+            var item = doc.QuerySelector(".widget-search-result-container")!;
+            // Класс, в котором лежат товары
+            var itemsWrapper = item.FirstElementChild;
+
+            string className = itemsWrapper.FirstElementChild!.ClassName!.Replace(" ", ".").Insert(0, ".");
+            Console.WriteLine($"Got class name: {className}");
+
+            var products = doc.QuerySelectorAll(className);
+
+            // Товары могут быть 2-х структур: с ссылкой внутри класса или с ссылкой внутри дочернего класса (div)
+            bool isFirstTypeStruct = !products.First().FirstElementChild!.HasAttribute("href");
+            await Console.Out.WriteLineAsync($"Is first struct type: {isFirstTypeStruct}\n\n");
+
+            List<string> prodList = new();
+            foreach ( var product in products ) {
+                string refHtml = (isFirstTypeStruct ? product.FirstElementChild!.FirstElementChild : product.FirstElementChild)!.GetAttribute("href")!;
+                await Console.Out.WriteLineAsync(refHtml);
+                await Console.Out.WriteLineAsync("\n");
+
+                prodList.Add(Parser.BaseUrl + refHtml);
+            }
+            Console.WriteLine("\n\n");
+            await Console.Out.WriteLineAsync($"Got {products.Length} items on current page");
+
+            using(var sw = new StreamWriter("ProductRefs.csv")) { sw.WriteLine(string.Join(",", prodList)); }
+            await Console.Out.WriteLineAsync("Wrote csv file of refs...");
+
             Console.WriteLine("Done!");
             Console.WriteLine("PRESS ANY BUTTON TO EXIT CONSOLE");
 
             Console.ReadKey();
-        }
-
-        private static async Task<IHtmlDocument> GetHtmlSource(string html) {
-            var parser = new HtmlParser();
-            return await parser.ParseDocumentAsync(html);
         }
         
     }

@@ -3,3 +3,11 @@
 ################################################################################
 
 /OzonParser/bin/
+/OzonParser/obj/
+/build/
+bin/
+obj/
+Debug/
+Release/
+*.vs
+.vs
