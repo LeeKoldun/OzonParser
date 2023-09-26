@@ -1,4 +1,5 @@
-﻿using AngleSharp.Html.Dom;
+﻿using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
 using CefSharp;
 using ParserLib;
 using ParserLib.Models;
@@ -19,69 +20,78 @@ namespace OzonProductParser
 
         static async Task MainAsync(string[] refs) {
             var browser = Parser.Browser;
-            int i = 0;
+            List<ProdModel> prods = new();
 
-            await browser.LoadUrlAsync(refs[i]);
-            await CheckLoad();
+            for(int i = 0; i < refs.Length; i++) { 
+                await browser.LoadUrlAsync(refs[i]);
+                await CheckLoad();
 
-            Console.WriteLine("Loading product...");
-            await Task.Delay(5000);
+                Console.WriteLine("Loading product...");
+                await Task.Delay(5000);
 
-            var doc = await Parser.GetHtmlSource(await browser.GetSourceAsync());
+                var doc = await Parser.GetHtmlSource(await browser.GetSourceAsync());
 
-            ProdModel prod = new();
-            SellerModel seller = prod.Seller;
+                ProdModel prod = new();
+                SellerModel seller = prod.Seller;
 
-            // Product //
+                // Product //
 
-            // Url
-            prod.Url = refs[i];
+                // Url
+                prod.Url = refs[i];
+                await Console.Out.WriteLineAsync(prod.Url);
 
-            // Title
-            prod.Title = doc.QuerySelector(".lq2")!.TextContent;
+                // Title
+                prod.Title = doc.QuerySelector(".lq2")!.TextContent;
 
-            // Description
-            prod.Description = GetDescription(doc);
+                // Description
+                prod.Description = GetDescription(doc);
 
-            // Params
-            prod.ProdParams = GetParams(doc);
+                // Params
+                prod.ProdParams = GetParams(doc);
 
-            // Price
-            prod.Price = (doc.QuerySelector(".pl8.lp9.l9p.p7l") == null ? doc.QuerySelector(".p8l")! : doc.QuerySelector(".pl8.lp9.l9p.p7l"))!.TextContent; ;
+                // Price
+                prod.Price = (doc.QuerySelector(".pl8.lp9.l9p.p7l") == null ? doc.QuerySelector(".p8l")! : doc.QuerySelector(".pl8.lp9.l9p.p7l"))!.TextContent; ;
 
-            // Rating
-            prod.Rating = doc.QuerySelector(".x3r")!.TextContent.Split(" ").First();
+                // Rating
+                prod.Rating = doc.QuerySelector(".x3r") != null ? doc.QuerySelector(".x3r")!.TextContent.Split(" ").First() : string.Empty;
 
-            // RatingCount
-            prod.RatingCount = doc.QuerySelector(".e8144-a9.e8144-b0")!.TextContent.Replace("\n", "").Trim();
+                // RatingCount
+                prod.RatingCount = doc.QuerySelector(".e8144-a9.e8144-b0") != null ? doc.QuerySelector(".e8144-a9.e8144-b0")!.TextContent.Replace("\n", "").Trim() : string.Empty;
 
-            // ImgUrl
-            prod.ImgUrl = doc.QuerySelector(".jr8")!.FirstElementChild!.GetAttribute("src")!;
+                // ImgUrl
+                prod.ImgUrl = doc.QuerySelector(".jr8") != null ? doc.QuerySelector(".jr8")!.FirstElementChild!.GetAttribute("src")! : doc.QuerySelector(".j1r")!.GetAttribute("src")!;
 
-            // Seller //
+                // Seller //
 
-            // Name
-            seller.Name = doc.QuerySelector(".u5j")!.TextContent;
+                // Name
+                seller.Name = doc.QuerySelector(".u5j")!.TextContent;
 
-            // Url
-            seller.Url = doc.QuerySelector(".u5j")!.GetAttribute("href")!;
+                // Url
+                string shopUrl = doc.QuerySelector(".u5j")!.GetAttribute("href")!;
+                shopUrl = shopUrl[0] == '/' ? Parser.BaseUrl + shopUrl : shopUrl;
+                seller.Url = shopUrl;
 
-            // Подбираемся к огрн :) //
-            await browser.LoadUrlAsync(seller.Url);
-            await CheckLoad();
+                // Подбираемся к огрн :) //
+                await browser.LoadUrlAsync(seller.Url);
+                await CheckLoad();
 
-            await Task.Delay(2000);
-            browser.ExecuteScriptAsync("document.querySelector('.uh7').lastChild.querySelector('.v4h').click()");
-            await Task.Delay(1000);
+                await Task.Delay(1000);
+                browser.ExecuteScriptAsync("document.querySelector('.uh7').lastChild.querySelector('.v4h').click()");
+                await Task.Delay(2000);
 
-            doc = await Parser.GetHtmlSource(await browser.GetSourceAsync());
-            string[] shopInfo = doc.QuerySelector(".tsBody600Medium")!.InnerHtml.Split("<br>");
+                doc = await Parser.GetHtmlSource(await browser.GetSourceAsync());
+                string[] shopInfo = doc.QuerySelector(".tsBody600Medium")!.InnerHtml.Split("<br>");
 
-            // Ogrn
-            seller.Ogrn = shopInfo.Length > 2 ? shopInfo[2] : string.Empty;
+                // Ogrn
+                seller.Ogrn = shopInfo.Length > 2 ? shopInfo[2] : string.Empty;
 
-            // FullName?
-            seller.FullName = shopInfo.First();
+                // FullName?
+                seller.FullName = shopInfo.First();
+
+                await Console.Out.WriteLineAsync($"\nLoaded {i + 1}/{refs.Length} products\n");
+
+                prods.Add(prod);
+            }
 
 
             //for(int i = 0; i < refs.Length; i++) {
@@ -100,7 +110,7 @@ namespace OzonProductParser
             //    await Console.Out.WriteLineAsync($"Saved prod {i + 1} / {refs.Length}");
             //}
 
-            ExcelParser.ConvertProdToExcel(new ProdModel[] { prod });
+            ExcelParser.ConvertProdToExcel(prods);
 
             await Console.Out.WriteLineAsync("Done!");
             await Console.Out.WriteLineAsync("PRESS ANY BUTTON TO CLOSE CONSOLE");
@@ -112,8 +122,18 @@ namespace OzonProductParser
 
         private static string GetDescription(IHtmlDocument doc) {
             Regex reg = new Regex(@"&(\w*);");
-            string desc = doc.QuerySelector(".ra-a1")!
-                .InnerHtml.Replace("<br>", "\n");
+            bool isFirstTypeStruct = doc.QuerySelector(".ra-a1") != null;
+
+            string desc = "";
+            if(isFirstTypeStruct) desc = doc.QuerySelector(".ra-a1")!.InnerHtml.Replace("<br>", "\n");
+            else {
+                var spans = doc.QuerySelectorAll(".ra-a1");
+                foreach(var sp in spans) {
+                    if(sp.InnerHtml.Contains("<br>")) desc += sp.InnerHtml.Replace("<br>", "\n");
+                    else desc += sp.TextContent;
+                }
+            }
+
             desc = reg.Replace(desc, "");
             return desc;
         }
