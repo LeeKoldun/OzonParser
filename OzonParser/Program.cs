@@ -10,6 +10,10 @@ namespace OzonProdRefsParser {
         static bool done = false;
 
         static void Main() {
+#if ANYCPU
+            //Only required for PlatformTarget of AnyCPU
+            CefRuntime.SubscribeAnyCpuAssemblyResolver();
+#endif
             Console.Write("Enter ozon search url: ");
 
             while(string.IsNullOrEmpty(address)) {

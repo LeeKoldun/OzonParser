@@ -1,4 +1,5 @@
-﻿using AngleSharp.Html.Dom;
+﻿using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using CefSharp;
 using CefSharp.OffScreen;
@@ -45,6 +46,10 @@ namespace ParserLib {
             Browser.Dispose();
             Cef.Shutdown();
         }
+
+        public static IElement? GetWidgetByName(IParentNode doc, string widgetName) => doc.QuerySelector($"[data-widget=\"{widgetName}\"]");
+        public static IHtmlCollection<IElement> GetAllWidgetsByName(IParentNode doc, string widgetName) => doc.QuerySelectorAll($"[data-widget=\"{widgetName}\"]");
+        public static IElement? GetWidgetByIdName(IParentNode doc, string widgetId) => doc.QuerySelector($"[id=\"{widgetId}\"]");
 
         public static async Task<IHtmlDocument> GetHtmlSource(string html) {
             var parser = new HtmlParser();

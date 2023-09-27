@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;Ye</Configurations>
     <Platforms>AnyCPU;x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+	<CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
   </PropertyGroup>
 
   <ItemGroup>
