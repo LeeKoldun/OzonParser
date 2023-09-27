@@ -26,8 +26,20 @@ namespace OzonProductParser
             try {
                 for (int i = 0; i < refs.Length; i++) {
                     if (done) break;
-                    MainAsync(refs[i], i, refs.Length).Wait();
+                    try {
+                        MainAsync(refs[i], i, refs.Length).Wait();
+                    }
+                    catch (Exception e) {
+                        Console.WriteLine("\n\nParse error\n\n");
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine();
+                    }
                 }
+            }
+            catch(Exception e) {
+                Console.WriteLine("\n\nERROR!\n");
+                Console.WriteLine(e.Message);
+                Console.WriteLine();
             }
             finally { 
                 ExcelParser.SaveSheet();
@@ -163,20 +175,32 @@ namespace OzonProductParser
         }
 
         private static string GetImgUrl(IHtmlDocument doc) {
-            var gallery = Parser.GetWidgetByName(doc, "webGallery")!
+            //var gallery = Parser.GetWidgetByName(doc, "webGallery")!
+            //    .FirstElementChild!
+            //    .LastElementChild!
+            //    .FirstElementChild!
+            //    .FirstElementChild!
+            //    .Children[1];
+            var imgContainer = Parser.GetWidgetByName(doc, "webGallery")!
                 .FirstElementChild!
                 .LastElementChild!
                 .FirstElementChild!
-                .FirstElementChild!
-                .Children[1];
-            var imgs = gallery.QuerySelectorAll("[data-index] [src]");
-            List<string> imgRefs = new();
+                .FirstElementChild!;
 
-            foreach(var img in imgs) imgRefs.Add(img.GetAttribute("src")!);
-            foreach(var srcRef in imgRefs) {
-                if (srcRef.Contains("video")) continue;
+            if(imgContainer.Children.Length > 1) {
+                var gallery = imgContainer.Children[1];
+                var imgs = gallery.QuerySelectorAll("[data-index] [src]");
+                List<string> imgRefs = new();
 
-                return srcRef;
+                foreach(var img in imgs) imgRefs.Add(img.GetAttribute("src")!);
+                foreach(var srcRef in imgRefs) {
+                    if(srcRef.Contains("video")) continue;
+
+                    return srcRef;
+                }
+            }
+            else {
+                return imgContainer.FirstElementChild!.GetAttribute("src")!;
             }
 
             return string.Empty;
@@ -193,15 +217,16 @@ namespace OzonProductParser
                 .FirstElementChild!
                 .FirstElementChild!
                 .LastElementChild!
-                .TextContent;
+                .TextContent
+                .Trim();
 
-            return ratingCount.Trim();
+            return ratingCount == "0" ? string.Empty : ratingCount;
         }
 
         private static string GetRating(IHtmlDocument doc) {
             var reviewTab = Parser.GetWidgetByName(doc, "webReviewTabs")!;
-            var row = Parser.GetAllWidgetsByName(reviewTab, "row");
-            var column = row.First().Children.Last();
+            var row = reviewTab.Children[1].FirstElementChild!;
+            var column = row.Children.Last();
             var rating = column
                 .Children[1]
                 .FirstElementChild!
@@ -210,7 +235,7 @@ namespace OzonProductParser
                 .TextContent;
             rating = rating.Split(" ").First();
 
-            return rating;
+            return rating == "Нет" ? string.Empty : rating;
         }
 
         private static string GetPrice(IHtmlDocument doc) {
@@ -239,7 +264,9 @@ namespace OzonProductParser
             //}
 
             Regex reg = new Regex(@"&(\w*);");
-            var desc = Parser.GetWidgetByIdName(doc, "section-description")!
+            var descSection = Parser.GetWidgetByIdName(doc, "section-description");
+            if(descSection == null) return string.Empty;
+            var desc = descSection
                 .LastElementChild!
                 .TextContent;
 
@@ -249,17 +276,26 @@ namespace OzonProductParser
 
         static string GetParams(IHtmlDocument doc) {
             string prodParams = "";
+            string? paramClassName;
 
             var sections = Parser.GetWidgetByIdName(doc, "section-characteristics")!.Children[1].Children.ToList();
-
+            bool multiChar = sections.Count > 1;
             foreach (var el in sections) {
                 var columns = el.Children.ToList();
-                if(sections.Count > 1) columns.RemoveAt(0);
+                if(multiChar) { 
+                    columns.RemoveAt(0);
+                }
 
-                foreach(var rows in columns) {
-                    foreach (var row in rows.Children) {
-                        string name = row.Children[0].TextContent;
-                        string value = row.Children[1].TextContent;
+                int max = columns.Count;
+                for(int i = 0; i < max; i++) {
+                    var rows = columns[i];
+                    string name, value;
+
+                    if(i == max - 1 && !multiChar && rows.GetAttribute("style") == null) break;
+
+                    foreach(var row in rows.Children) {
+                        name = row.Children[0].TextContent;
+                        value = row.Children[1].TextContent;
 
                         prodParams += $"{name}&&{value};";
                     }

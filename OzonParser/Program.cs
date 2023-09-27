@@ -27,7 +27,7 @@ namespace OzonProdRefsParser {
                 MainAsync().Wait();
             }
 
-            //Parser.Shutdown();
+            Parser.Shutdown();
         }
 
         static async Task MainAsync() {
@@ -39,7 +39,7 @@ namespace OzonProdRefsParser {
             var doc = await Parser.GetHtmlSource(await browser.GetSourceAsync());
             var item = doc.QuerySelector(".widget-search-result-container")!;
             // Класс, в котором лежат товары
-            var itemsWrapper = item.FirstElementChild;
+            var itemsWrapper = item.FirstElementChild!;
 
             string className = itemsWrapper.FirstElementChild!.ClassName!.Replace(" ", ".").Insert(0, ".");
             Console.WriteLine($"Got class name: {className}");
