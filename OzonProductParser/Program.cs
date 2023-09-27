@@ -243,8 +243,8 @@ namespace OzonProductParser
                 .LastElementChild!
                 .TextContent;
 
-            desc = reg.Replace(desc, "").Trim();
-            return desc == "Показать полностью" ? string.Empty : desc;
+            desc = reg.Replace(desc, "").Trim().Replace("Показать полностью", "");
+            return desc;
         }
 
         static string GetParams(IHtmlDocument doc) {
@@ -254,7 +254,7 @@ namespace OzonProductParser
 
             foreach (var el in sections) {
                 var columns = el.Children.ToList();
-                columns.RemoveAt(0);
+                if(sections.Count > 1) columns.RemoveAt(0);
 
                 foreach(var rows in columns) {
                     foreach (var row in rows.Children) {
