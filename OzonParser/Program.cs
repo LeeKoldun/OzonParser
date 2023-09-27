@@ -6,6 +6,8 @@ namespace OzonProdRefsParser {
     internal static class Program {
         static string? address = "";
         static int pageCount = 1;
+        const int maxPage = 100;
+        static bool done = false;
 
         static void Main() {
             Console.Write("Enter ozon search url: ");
@@ -17,7 +19,7 @@ namespace OzonProdRefsParser {
             if(File.Exists("ProductRefs.csv")) File.Delete("ProductRefs.csv");
 
             Parser.Init(address).Wait();
-            while(true) {
+            while(!done) {
                 MainAsync().Wait();
             }
 
@@ -53,18 +55,17 @@ namespace OzonProdRefsParser {
                 prodList.Add(Parser.BaseUrl + refHtml);
             }
             Console.WriteLine("\n\n");
-            await Console.Out.WriteLineAsync($"Got {products.Length} items on page {pageCount}");
+            await Console.Out.WriteLineAsync($"Got {products.Length} items on page {pageCount} / {maxPage} max");
 
             using(var sw = new StreamWriter("ProductRefs.csv", true)) { sw.Write((pageCount == 1 ? "" : ",") + string.Join(",", prodList)); }
             await Console.Out.WriteLineAsync("Wrote refs to csv file...");
 
-            var next = doc.QuerySelector(".a2423-a4");
-            if(next != null) {
-                pageCount++;
-                browser.ExecuteScriptAsync("document.querySelector('.ep1.a2423-a').firstElementChild.click()");
-            }
-            else {
+            pageCount++;
+            await browser.LoadUrlAsync(address + $"&page={pageCount}");
+
+            if (pageCount > maxPage) {
                 await Console.Out.WriteLineAsync("\nDONE\n");
+                done = true;
                 return;
             }
         }

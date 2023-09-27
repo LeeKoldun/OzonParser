@@ -38,7 +38,7 @@ namespace ParserLib {
         public static async Task<bool> WaitLoad() {
             await Console.Out.WriteLineAsync("Browser is loading...");
             var result = await Browser.WaitForInitialLoadAsync();
-            return result.Success;
+            return result.HttpStatusCode == 200;
         }
 
         static public void Shutdown() {
