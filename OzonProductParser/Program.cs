@@ -26,21 +26,21 @@ namespace OzonProductParser
             try {
                 for (int i = 0; i < refs.Length; i++) {
                     if (done) break;
-                    //try {
+                    try {
                         MainAsync(refs[i], i, refs.Length).Wait();
-                    //}
-                    //catch (Exception e) {
-                    //    Console.WriteLine("\n\nParse error\n\n");
-                    //    Console.WriteLine(e.Message);
-                    //    Console.WriteLine();
-                    //}
+                    }
+                    catch (Exception e) {
+                        Console.WriteLine("\n\nParse error\n\n");
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine();
+                    }
                 }
             }
-            //catch(Exception e) {
-            //    Console.WriteLine("\n\nERROR!\n");
-            //    Console.WriteLine(e.Message);
-            //    Console.WriteLine();
-            //}
+            catch (Exception e) {
+                Console.WriteLine("\n\nERROR!\n");
+                Console.WriteLine(e.Message);
+                Console.WriteLine();
+            }
             finally { 
                 ExcelParser.SaveSheet();
                 Console.WriteLine("Saved Excel");
