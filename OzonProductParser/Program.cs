@@ -26,21 +26,21 @@ namespace OzonProductParser
             try {
                 for (int i = 0; i < refs.Length; i++) {
                     if (done) break;
-                    try {
+                    //try {
                         MainAsync(refs[i], i, refs.Length).Wait();
-                    }
-                    catch (Exception e) {
-                        Console.WriteLine("\n\nParse error\n\n");
-                        Console.WriteLine(e.Message);
-                        Console.WriteLine();
-                    }
+                    //}
+                    //catch (Exception e) {
+                    //    Console.WriteLine("\n\nParse error\n\n");
+                    //    Console.WriteLine(e.Message);
+                    //    Console.WriteLine();
+                    //}
                 }
             }
-            catch(Exception e) {
-                Console.WriteLine("\n\nERROR!\n");
-                Console.WriteLine(e.Message);
-                Console.WriteLine();
-            }
+            //catch(Exception e) {
+            //    Console.WriteLine("\n\nERROR!\n");
+            //    Console.WriteLine(e.Message);
+            //    Console.WriteLine();
+            //}
             finally { 
                 ExcelParser.SaveSheet();
                 Console.WriteLine("Saved Excel");
@@ -294,6 +294,7 @@ namespace OzonProductParser
                     if(i == max - 1 && !multiChar && rows.GetAttribute("style") == null) break;
 
                     foreach(var row in rows.Children) {
+                        if (row.Children.Length < 2) break;
                         name = row.Children[0].TextContent;
                         value = row.Children[1].TextContent;
 
