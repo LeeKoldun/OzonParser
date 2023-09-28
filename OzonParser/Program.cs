@@ -23,9 +23,19 @@ namespace OzonProdRefsParser {
             if(File.Exists("ProductRefs.csv")) File.Delete("ProductRefs.csv");
 
             Parser.Init(address).Wait();
-            while(!done) {
-                MainAsync().Wait();
+            try {
+                while(!done) {
+                    MainAsync().Wait();
+                }
             }
+            catch (Exception e) {
+                Console.WriteLine("\n\nERROR\n\n");
+                Console.WriteLine(e.Message);
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("PRESS ANY BUTTON TO CLOSE CONSOLE");
+            Console.ReadKey();
 
             Parser.Shutdown();
         }
