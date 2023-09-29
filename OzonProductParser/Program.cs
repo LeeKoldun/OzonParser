@@ -1,6 +1,7 @@
 ﻿using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using CefSharp;
+using CefSharp.DevTools.Autofill;
 using CefSharp.OffScreen;
 using ParserLib;
 using ParserLib.Models;
@@ -9,6 +10,9 @@ using System.Text.RegularExpressions;
 namespace OzonProductParser
 {
     internal static class Program {
+        static string? fileName = "";
+        static int awaitTime;
+        static int sellerAwaitTime;
         static bool done = false;
 
         static void Main() {
@@ -16,8 +20,38 @@ namespace OzonProductParser
             //Only required for PlatformTarget of AnyCPU
             CefRuntime.SubscribeAnyCpuAssemblyResolver();
 #endif
+            do {
+                Console.Write("Enter csv file name: ");
+                fileName = Console.ReadLine();
+                if(!string.IsNullOrEmpty(fileName)) break;
+            } while(true);
+
+
+            do {
+                Console.Write("Enter load await time in seconds: ");
+                bool success = int.TryParse(Console.ReadLine(), out int n);
+                if(!success) continue;
+
+                awaitTime = n * 1000;
+                Console.WriteLine($"Await time: {n} seconds");
+                break;
+            }
+            while(true);
+
+
+            do {
+                Console.Write("Enter SELLER load await time in seconds: ");
+                bool success = int.TryParse(Console.ReadLine(), out int n);
+                if(!success) continue;
+
+                sellerAwaitTime = n * 1000;
+                Console.WriteLine($"Seller await time: {n} seconds");
+                break;
+            }
+            while(true);
+
             string[] refs;
-            using (var sr = new StreamReader("ProductRefs.csv")) { refs = sr.ReadToEnd().Split(','); }
+            using (var sr = new StreamReader($"{fileName}.csv")) { refs = sr.ReadToEnd().Split(','); }
 
             ExcelParser.InitSheet();
 
@@ -42,7 +76,7 @@ namespace OzonProductParser
                 Console.WriteLine();
             }
             finally { 
-                ExcelParser.SaveSheet();
+                ExcelParser.SaveSheet(fileName);
                 Console.WriteLine("Saved Excel");
             }
             Parser.Shutdown();
@@ -73,8 +107,9 @@ namespace OzonProductParser
             await browser.LoadUrlAsync(refProd);
             await CheckLoad();
 
+            Console.WriteLine("YOU CAN PRESS 'Escape' TO STOP PARSER");
             Console.WriteLine("Loading product...");
-            await Task.Delay(5000);
+            await Task.Delay(awaitTime);
 
             var doc = await Parser.GetHtmlSource(await browser.GetSourceAsync());
 
@@ -90,24 +125,31 @@ namespace OzonProductParser
 
             // Title
             prod.Title = Parser.GetWidgetByName(doc, "webProductHeading")!.TextContent;
+            Console.WriteLine("Got title");
 
             // Description
             prod.Description = GetDescription(doc);
+            Console.WriteLine("Got description");
 
             // Params
             prod.ProdParams = GetParams(doc);
+            Console.WriteLine("Got params");
 
             // Price
             prod.Price = GetPrice(doc);
+            Console.WriteLine("Got price");
 
             // Rating
             prod.Rating = GetRating(doc);
+            Console.WriteLine("Got rating");
 
             // RatingCount
             prod.RatingCount = GetRatingCount(doc);
+            Console.WriteLine("Got rating count");
 
             // ImgUrl
             prod.ImgUrl = GetImgUrl(doc);
+            Console.WriteLine("Got image url\n");
 
 
             // Seller //
@@ -115,9 +157,11 @@ namespace OzonProductParser
             // Name
             var sellerNode = GetSellerNode(doc);
             seller.Name = sellerNode.TextContent;
+            Console.WriteLine("Got Seller name");
 
             // Url
             if(seller.Name != "OZON Россия") await GetSellerInfo(browser, seller, sellerNode);
+            else seller.Ogrn = "1147746332062";
 
             await Console.Out.WriteLineAsync($"\nLoaded {i + 1}/{length} products\n");
 
@@ -131,17 +175,19 @@ namespace OzonProductParser
             shopUrl = shopUrl[0] == '/' ? Parser.BaseUrl + shopUrl : shopUrl;
             seller.Url = shopUrl;
 
+            Console.WriteLine($"Seller url:\n{shopUrl}\n");
+
             // Подбираемся к огрн :) //
             await browser.LoadUrlAsync(seller.Url);
             await CheckLoad();
 
-            await Task.Delay(2000);
+            await Task.Delay(1000);
             
             var doc = await Parser.GetHtmlSource(await browser.GetSourceAsync());
             var sellerBarName = Parser.GetWidgetByName(doc, "sellerTransparency")!.Children.Last().ClassName;
 
             browser.ExecuteScriptAsync($"document.querySelector('.{sellerBarName}').lastChild.firstChild.click()");
-            await Task.Delay(1000);
+            await Task.Delay(sellerAwaitTime);
 
             doc = await Parser.GetHtmlSource(await browser.GetSourceAsync());
 
@@ -156,9 +202,10 @@ namespace OzonProductParser
 
             // Ogrn
             seller.Ogrn = ulong.TryParse(shopInfo.Last(), out _) ? shopInfo.Last() : string.Empty;
+            Console.WriteLine("Got OGRN");
 
             // FullName?
-            seller.FullName = shopInfo.First();
+            //seller.FullName = shopInfo.First();
         }
 
         private static IElement GetSellerNode(IHtmlDocument doc) {

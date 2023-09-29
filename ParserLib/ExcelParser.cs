@@ -55,6 +55,11 @@ namespace ParserLib
             RowIndex++;
         }
 
-        public static void SaveSheet() => Sl.SaveAs("ResultTable.xls");
+        public static void SaveSheet(string filename) { 
+            if(!Directory.Exists("Parse_Results")) {
+                Directory.CreateDirectory("Parse_Results");
+            }
+            Sl.SaveAs($"Parse_Results/{filename}.xls"); 
+        }
     }
 }
